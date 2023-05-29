@@ -1,6 +1,9 @@
 void webHandleRoot() {
   String inhalt;
-  float vcc = ESP.getVcc() / 1000.0;
+  float vcc = 0;
+  #if defined (ARDUINO_ARCH_ESP8266)
+  vcc = ESP.getVcc() / 1000.0;
+  #endif
   inhalt  = "<!DOCTYPE html>";
   inhalt += "<html><head><meta charset='utf-8' name='viewport' content='width=device-width, initial-scale=1.0'><meta http-equiv='refresh' content='60'><title>" + anwendungsname + "</title></head><body style='font-family:verdana;background-color:#B9DFF8;color:#000000;margin:0px'>";
   inhalt += "<p style='background-color:#FFFFFF;color:#000000;padding:20px;padding-left:10px;margin:0px;'><img style='vertical-align: middle;width:50px;' src=' data:image/png;base64,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'>&nbsp;&nbsp;";
@@ -326,7 +329,11 @@ void webHandleRoot() {
   inhalt += "</td></tr>";
 
   inhalt += "<tr><td>Heap Fragmentierung (<50% OK)</td><td>";
+  #if defined (ARDUINO_ARCH_ESP8266)
   inhalt += ESP.getHeapFragmentation();
+  #else
+  inhalt += "not supported";
+  #endif
   inhalt += "%</td></tr>";
 
   //inhalt += "<tr><td>Freier Heapspeicher</td><td>";
@@ -1370,7 +1377,7 @@ void webHandleConfigSave() {
     ntp_server.toCharArray(cfg.data_ntp_server, (sizeof(cfg.data_ntp_server) - 1) );
   }
 
-  //************************************************************
+   //************************************************************
   // PUSHOVER
   //************************************************************
   if (server.hasArg("pushover_check_form")) {
@@ -1567,7 +1574,7 @@ void webHandlePushTest() {
   pushover.setTitle("Zisterne");
   pushover.setMessage("Testnachricht von Zisterne");
   if (DEBUG) Serial.println("Pushover-Testnachricht getriggert");
-  inhalt += pushover.send();
+  inhalt += pushover.send();  
 
   //inhalt += cfg.data_pushover_apptoken;
   //inhalt += "<br>";
@@ -1660,6 +1667,6 @@ void webHandleBoot() {
   //   digitalWrite(sensor, LOW);
   //   delay (1500);
   //} else {
-  system_restart();
+  restart();
   //}
 }

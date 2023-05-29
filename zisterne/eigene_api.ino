@@ -3,7 +3,11 @@
 // verschiedene Werte per Argument
 //********************************************************
 void eigene_api() {
-  float vcc = ESP.getVcc() / 1000.0;
+  float vcc = 0;
+  #if defined (ARDUINO_ARCH_ESP8266)
+  vcc = ESP.getVcc() / 1000.0;
+  #endif
+
   currentMillisEigen = millis();
   if (currentMillisEigen - startMillisEigen >= (cfg.data_eigenapi_intervall * 1000)) {
     

@@ -2,6 +2,12 @@
 // WIFI Funktionen
 //********************************************************
 
+#if defined (ARDUINO_ARCH_ESP8266)
+#define OPEN_WIFI ENC_TYPE_NONE
+#elif defined(ESP32)
+#define OPEN_WIFI WIFI_AUTH_OPEN
+#endif
+
 void starteWLAN() {
   Serial.println("Starte WLAN-Verbindung");
   if ( sizeof(cfg.SSID) > 1 ) {
@@ -109,7 +115,7 @@ void setupAP(void) {
       Serial.print(" (");
       Serial.print(WiFi.RSSI(i));
       Serial.print(" dB)");
-      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " (Offen)" : "*");
+      Serial.println((WiFi.encryptionType(i) == OPEN_WIFI) ? " (Offen)" : "*");
 
       // Anzeigen der SSID der gefundenen Netzwerke
       stationList += "<td colspan=2>";
@@ -119,7 +125,7 @@ void setupAP(void) {
       stationList += " (";
       stationList += WiFi.RSSI(i);
       stationList += " dB)";
-      stationList += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " (Offen)" : "*";
+      stationList += (WiFi.encryptionType(i) == OPEN_WIFI) ? " (Offen)" : "*";
       stationList += "</td>";
       delay(10);
     }

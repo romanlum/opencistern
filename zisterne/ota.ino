@@ -2,6 +2,10 @@
 // OTA-Update
 //**********************************************
 void checkForUpdates() {
+//only esp8266 for now
+//TODO: fix for esp32
+#if defined (ARDUINO_ARCH_ESP8266)
+
   currentMillisOta = millis();
   if (currentMillisOta - startMillisOta >= (ota_zeit * 1000)) {
     
@@ -59,5 +63,5 @@ void checkForUpdates() {
     }
     httpClient.end();
   }
-  
+#endif  
 }

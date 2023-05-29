@@ -1,11 +1,20 @@
+#if defined (ARDUINO_ARCH_ESP8266)
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include <WiFiClient.h>
-#include <Ticker.h>
-#include <EEPROM.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
+#elif defined(ESP32)
+#include <ESPmDNS.h>
+#include <WebServer.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <Update.h>
+#endif
+
+#include <Ticker.h>
+#include <EEPROM.h>
 #include <LiquidCrystal_I2C.h>   //für LCD
 #include <ss_oled.h>             //für OLED
 #include <Wire.h>
@@ -21,16 +30,17 @@
 #include <VL53L0X.h>              //Pololu-Lib
 #include "SparkFun_VL53L1X.h"
 
+#if defined (ARDUINO_ARCH_ESP8266)
 extern "C" {
   #include "user_interface.h"
 }
-
+#endif
 //********************************************************
 // Die Sensoren
 //********************************************************
 //HC-SR04
-#define TRIGGER   4
-#define ECHO      5
+#define TRIGGER   13
+#define ECHO      12
 #define MAX_DIST  300
 
 //VL53L0X
@@ -158,7 +168,7 @@ String apSSID = "WLAN-Zisterne";
 const int cfgStart = 0;
 const int setupTimeOutLimit = 300;        // Zeit die AP bestehen bleibt. War mal 600, jetzt nur noch 5 Minuten
 
-ESP8266WebServer server(80);
+WebServer server(80);
 WiFiClient wifiClient;
 Ticker setupTimeOut_timer;                // Timer um AP zu resetten
 configData_t cfg;
@@ -179,8 +189,6 @@ String macAdresse;
 String ipAdresse;
 String myHostname;
 
-ADC_MODE(ADC_VCC);
-uint32_t freeheap = system_get_free_heap_size();
 
 
 //Fuer die taegliche Ausfuehrung
@@ -446,7 +454,7 @@ void loop() {
     eraseConfig();
     delay(1000);
     eepromToClear = 0;
-    system_restart();
+    restart();
   }
 
   //******************
@@ -475,7 +483,7 @@ void loop() {
   //********************************************
   //Taegliche Ausfuehrung zur gewaehlten Uhrzeit
   //********************************************
-  if (cfg.data_pushover_check == 1) {
+    if (cfg.data_pushover_check == 1) {
     if (timeClient.getHours() == cfg.data_pushover_zeit && gesendet_pushover==false) {
       Pushover pushover = Pushover(cfg.data_pushover_apptoken,cfg.data_pushover_usertoken, UNSAFE);
       pushover.setTitle("Zisterne");
@@ -489,7 +497,7 @@ void loop() {
       gesendet_pushover=false;
     }
   }
-
+  
 //  if (cfg.data_mail_check == 1) {
 //    if (timeClient.getFormattedTime().substring(0,2) == (String)cfg.data_mail_zeit && gesendet_mail==false) {
 //      //Testweise

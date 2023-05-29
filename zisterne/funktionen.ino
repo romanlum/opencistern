@@ -4,7 +4,7 @@ void setupTimeOutCount()
 {
   if (setupTimeOut >= setupTimeOutLimit) {
     Serial.println("Sensor-Restart weil AP zu lange geöffnet");
-    system_restart();
+    restart();
   } else {
     //Serial.println("Ticker1");
     setupTimeOut++;
@@ -65,4 +65,15 @@ String getHostname(int Mode) {
   }
   String hostname = macToHostname(mac);
   return hostname;
+}
+
+//********************************************************
+void restart(){
+#if defined (ARDUINO_ARCH_ESP8266)
+system_restart();
+#elif defined(ESP32)
+ESP.restart();
+#else
+#error Architecture unrecognized by this code.
+#endif
 }
